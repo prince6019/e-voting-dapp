@@ -1,0 +1,57 @@
+.homepage{
+    width: 100%;
+}
+.homepage_container{
+    width: 80%;
+    margin: 0 auto;
+}
+.homepage_container_banner{
+    display: flex;
+    justify-content: space-between;
+    background-image: linear-gradient(to right, rgb(0,0,128 , 1) 40% , rgb(0,0,128 , 0.7), rgb(0,0,128,0));
+    color: white;
+}
+
+.homepage_content{
+    width: 40%;
+    text-align: center;
+}
+.homepage_content > h1{
+    font-size: 4rem;
+    margin: 0 auto;
+    margin-top: 10rem;
+    margin-bottom: 2rem;
+
+}
+.homepage_content >button{
+    width: 27%;
+    height: 2.7rem;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    transition: all ease-in 0.3s;
+    margin-right: 1.3rem;
+    cursor: pointer;
+    box-shadow: 2px 2px 2px gray;
+}
+.homepage_content >button:hover{
+    box-shadow: 3px 3px 5px black;
+    font-size: 1rem;
+}
+.homepage_image{
+    z-index: -1;
+}
+
+
+.homepage_container_box{
+    width: 50%;
+    margin: 0 auto;
+    margin-top: 10rem;
+}
+.homepage_container_box >h1{
+    font-size: 3rem;
+}
+.homepage_container_box > p{
+    max-width: 70%;
+    font-size: 2rem;
+}
