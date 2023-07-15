@@ -12,7 +12,9 @@ const Navbar = () => {
         <div className={styles.navbar_container_top}>
           <div>
             <Image src={vote_img} height={40} width={40} />
-            <h3> BlockVote</h3>
+            <Link href="/">
+              <h3> BlockVote</h3>
+            </Link>
           </div>
           <ConnectWallet theme="light" />
         </div>
@@ -23,17 +25,17 @@ const Navbar = () => {
             </Link>
           </h3>
           <h3>
-            <Link className={styles.link} href="verification">
+            <Link className={styles.link} href="/verification">
               Verification
             </Link>
           </h3>
           <h3>
-            <Link className={styles.link} href="election">
+            <Link className={styles.link} href="/election">
               Election
             </Link>
           </h3>
           <h3>
-            <Link className={styles.link} href="results">
+            <Link className={styles.link} href="/results">
               Results
             </Link>
           </h3>

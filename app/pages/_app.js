@@ -12,11 +12,14 @@ export default function App({ Component, pageProps }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+
       <ThirdwebProvider activeChain="ethereum">
-        <Navbar />
-        <Component {...pageProps} />
+        <div className="main">
+          <Navbar />
+          <Component {...pageProps} />
+          <Footer />
+        </div>
       </ThirdwebProvider>
-      {/* <Footer /> */}
     </>
   );
 }

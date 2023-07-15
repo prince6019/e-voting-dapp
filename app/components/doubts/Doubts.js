@@ -3,12 +3,12 @@ import styles from "./Doubts.module.css";
 
 const Doubts = () => {
   return (
-    <div className={styles.douts}>
+    <div className={styles.doubts}>
       <div className={styles.doubts_container}>
         <h1>Your Questions Answered</h1>
         <div className={styles.doubts_qna}>
           <div>
-            <h1>How does the registration process work?</h1>
+            <h3>How does the registration process work?</h3>
             <p>
               The registration is simple and quick. You just need to provide
               some personal information, verify your identity, and you’re good
@@ -16,7 +16,7 @@ const Doubts = () => {
             </p>
           </div>
           <div>
-            <h1>Is my vote really secure & private?</h1>
+            <h3>Is my vote really secure & private?</h3>
             <p>
               Absolutely! We use the power of web3 technology and top-notch
               encryption methods to ensure the security and privacy of

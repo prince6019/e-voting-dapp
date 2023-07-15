@@ -1,0 +1,20 @@
+.footer{
+    width: 100%;
+    /* position: fixed; */
+    /* left: 0; */
+    /* bottom: 0; */
+}
+.footer_container{
+    width: 80%;
+    margin: 0 auto;
+    text-align: center;
+    padding: 5rem 0rem;
+}
+.voteicon{
+    height: 3rem;
+    width: 4rem;
+    margin-bottom: 1.5rem;
+}
+.footer_container >p{
+    margin: 0rem;
+}

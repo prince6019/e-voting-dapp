@@ -1,0 +1,31 @@
+.election{
+    width: 100%;
+}
+.election_container{
+    width: 80%;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(1fr 1fr);
+    align-items: center;
+}
+.election_container >h1{
+    margin-left: 2rem;
+}
+.election_list{
+    justify-self: end;
+}
+.election_list >h3{
+    padding: 0;
+    margin: 0;
+    margin-right: 2rem;
+}
+.election_details{
+    margin-top: 3rem;
+    background-color: var(--shadow-light-color);
+    box-shadow:var(--box-shadow);
+    padding: 2rem;
+    display: flex;
+    justify-content: space-around;
+    color: var(--icons-color);
+    grid-column: 1/3;
+}

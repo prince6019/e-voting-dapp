@@ -1,0 +1,19 @@
+.doubts{
+    width: 100%;
+}
+.doubts_container{
+    width: 60%;
+    margin: 0 auto;
+    padding: 1rem;
+    /* text-align: center; */
+    padding: 5rem 1rem;
+
+}
+.doubts_qna{
+    display: flex;
+    gap: 2rem;
+    justify-content: space-between;
+}
+.doubts_qna >div{
+    width: 40%;
+}
