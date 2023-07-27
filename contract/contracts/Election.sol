@@ -43,7 +43,7 @@ contract Election {
     // mapping
     mapping(address => Voter) private voterDetails;
     mapping(uint => Candidate) private candidateDetails;
-    mapping(address => uint256) private votedDetail;
+    mapping(address => uint) private votedDetail;
 
     // events----
     event CandidateAdded(string, address, string, string);
@@ -110,7 +110,13 @@ contract Election {
 
     // Getter Functions -----------
 
-    function getAdminDetails() external view returns (address) {
+    function getAdmin() external view returns (address) {
         return i_admin;
     }
+
+    function getCandidate() external view returns (Candidate[] memory) {
+        return Candidates;
+    }
+
+    function getVoterDetails() external view returns (Voter memory) {}
 }

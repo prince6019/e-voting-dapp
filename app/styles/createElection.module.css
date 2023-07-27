@@ -1,0 +1,62 @@
+.createElection{
+    width: 100%;
+    margin-top: 2rem;
+}
+.createElection_container{
+    width: 80%;
+    margin: 0 auto;
+}
+.createElection_header{
+    display: flex;
+    border-bottom: 1px solid var(--icons-color);
+    margin-left: 2rem;
+    gap: 2rem;
+    margin-bottom: 5rem;
+}
+.createElection_header > h3{
+    font-size: 1.3rem;
+    margin-bottom: 0;
+    padding-bottom:1rem ;
+    transition: all ease-in 0.3s;
+}
+
+.createElection_registration , .createElection_addcandidate{
+    margin-left: 2rem;
+    background-color: var(--shadow-light-color);
+    border-radius: 10px;
+    box-shadow: var(--box-shadow);
+}
+.createElection_registration >form  , .createElection_addcandidate > form{
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    font-size: 1.2rem;
+}
+.createElection_registration >form >label ,.createElection_addcandidate >form >label{
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.createElection_registration > form > input ,.createElection_addcandidate > form >input{
+    width: 50%;
+    height: 3rem;
+    margin-bottom: 2rem;
+    padding-left: 1rem;
+    border-radius: 10px;
+    border: 1px solid var(--icons-color);
+}
+.createElection_registration > button{
+    margin-left: 2rem;
+    margin-bottom: 2rem;
+}
+
+.createElection_addcandidate > div{
+    padding:0rem 1rem 2rem 1rem;
+    display: flex;
+    justify-content: space-between;
+}
+.candidates_button > div{
+    display: flex;
+    gap: 2rem;
+}
