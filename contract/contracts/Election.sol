@@ -10,19 +10,19 @@ contract Election {
     // state variables
     address private immutable i_admin;
     uint256 private candidateCount;
+    uint private start;
+    uint private end;
 
     // structs
-    struct Admin {
-        address admin;
-        string name;
-        bool isVerified;
-        bool isRegistered;
-        bool hasVoted;
+    struct ElectionDetails {
+        string adminName;
+        string adminPosition;
+        string electionTitle;
+        string organizationTitle;
     }
 
     struct Candidate {
         string name;
-        address candidate;
         string partyName;
         string slogan;
         uint256 votes;
@@ -36,6 +36,8 @@ contract Election {
         bool hasVoted;
     }
 
+    ElectionDetails private electionDetails;
+
     // structs arrays
     address[] private Voters;
     Candidate[] private Candidates;
@@ -46,8 +48,14 @@ contract Election {
     mapping(address => uint) private votedDetail;
 
     // events----
-    event CandidateAdded(string, address, string, string);
-    event VoterRegistered(address voter, string data, string phoneNo);
+    event CandidateAdded(string indexed name, string partyName, string slogan);
+    event VoterRegistered(address indexed voter, string data, string phoneNo);
+    event electionAdded(
+        string indexed adminName,
+        string indexed electionTitle,
+        string adminPosition,
+        string organizationTitle
+    );
 
     constructor() {
         i_admin = msg.sender;
@@ -61,21 +69,39 @@ contract Election {
         _;
     }
 
+    function setElectionDetails(
+        string calldata _adminName,
+        string calldata _adminPosition,
+        string calldata _electionTitle,
+        string calldata _organizationTitle
+    ) external onlyAdmin {
+        electionDetails = ElectionDetails(
+            _adminName,
+            _adminPosition,
+            _electionTitle,
+            _organizationTitle
+        );
+        emit electionAdded(
+            _adminName,
+            _adminPosition,
+            _electionTitle,
+            _organizationTitle
+        );
+    }
+
     function addCandidate(
         string calldata _name,
-        address _candidate,
         string calldata _partyName,
         string calldata _slogan
     ) external onlyAdmin {
-        Candidates[candidateCount] = Candidate(
-            _name,
-            _candidate,
-            _partyName,
-            _slogan,
-            0
-        );
+        Candidates.push(Candidate(_name, _partyName, _slogan, 0));
         candidateCount++;
-        emit CandidateAdded(_name, _candidate, _partyName, _slogan);
+        emit CandidateAdded(_name, _partyName, _slogan);
+    }
+
+    function initiateElection(uint _endTime) external onlyAdmin {
+        start = block.timestamp;
+        end = _endTime;
     }
 
     function registerVoter(
@@ -91,9 +117,9 @@ contract Election {
         emit VoterRegistered(msg.sender, _aadhar, _phoneNo);
     }
 
-    function verifyVoter(address _voter) external onlyAdmin {
+    function verifyVoter(address _voter, bool _hasVerified) external onlyAdmin {
         require(voterDetails[_voter].isVerified != true);
-        voterDetails[_voter].isVerified = true;
+        voterDetails[_voter].isVerified = _hasVerified;
     }
 
     function Vote(uint _candidateId) external {
@@ -104,14 +130,36 @@ contract Election {
             uint candidate = votedDetail[msg.sender];
             candidateDetails[candidate].votes--;
         }
+        require(block.timestamp > start && block.timestamp < end);
 
         candidateDetails[_candidateId].votes++;
+        voterDetails[msg.sender].hasVoted = true;
     }
 
     // Getter Functions -----------
 
     function getAdmin() external view returns (address) {
         return i_admin;
+    }
+
+    function getCandidateCount() external view returns (uint256) {
+        return candidateCount;
+    }
+
+    function getStartTime() external view returns (uint) {
+        return start;
+    }
+
+    function getEndTime() external view returns (uint) {
+        return end;
+    }
+
+    function getElectionDetails()
+        external
+        view
+        returns (ElectionDetails memory)
+    {
+        return electionDetails;
     }
 
     function getCandidate() external view returns (Candidate[] memory) {

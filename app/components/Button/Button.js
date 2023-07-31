@@ -1,9 +1,10 @@
 import React from "react";
 import styles from "./Button.module.css";
-const Button = ({ innerText, handleClick }) => {
+import Link from "next/link";
+const Button = ({ innerText, handleClick, link }) => {
   return (
     <button className={styles.button} onClick={() => handleClick()}>
-      {innerText}{" "}
+      <Link href={link}>{innerText} </Link>
     </button>
   );
 };

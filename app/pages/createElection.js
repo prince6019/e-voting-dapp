@@ -5,6 +5,12 @@ import { useState } from "react";
 export default function createElection() {
   const [showCandidate, setShowCandidate] = useState(false);
 
+  const handleClickEletion = () => {};
+
+  const handleAddCandidate = () => {
+    console.log("candidate added!");
+  };
+
   return (
     <div className={styles.createElection}>
       <div className={styles.createElection_container}>
@@ -22,19 +28,25 @@ export default function createElection() {
               <label>Your Wallet Address</label>
               <input placeholder="0x12345" disabled={true} />
               <label>Your Name</label>
-              <input placeholder="Enter your name" type="text" />
+              <input
+                placeholder="Enter your name"
+                type="text"
+                required={true}
+              />
               <label>Your Position</label>
               <input
                 placeholder="Enter your position in organisation"
                 type="text"
+                required={true}
               />
               <label>Election Title</label>
-              <input placeholder="What's this election for" />
+              <input placeholder="What's this election for" required={true} />
             </form>
 
             <Button
               handleClick={() => setShowCandidate(true)}
               innerText="Add Candidates -->"
+              link=""
             />
           </div>
         ) : (
@@ -63,13 +75,18 @@ export default function createElection() {
             </form>
             <div className={styles.candidates_button}>
               <div>
-                <Button innerText="Add Candidate" />
+                <Button
+                  innerText="Add Candidate"
+                  link=""
+                  handleClick={() => handleAddCandidate()}
+                />
                 <Button
                   handleClick={() => setShowCandidate(false)}
                   innerText="<--- Back"
+                  link=""
                 />
               </div>
-              <Button innerText="Start Election" />
+              <Button innerText="Start Election" link="/election" />
             </div>
           </div>
         )}

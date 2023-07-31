@@ -16,15 +16,18 @@ module.exports = {
   solidity: {
     compilers: [{ version: "0.8.18" }],
   },
+  paths: {
+    artifacts: "./artifacts",
+  },
 
   defaultNetwork: "hardhat",
 
   networks: {
     hardhat: {
       chainId: 31337,
-      forking: {
-        url: MAINNET_API_KEY,
-      },
+      // forking: {
+      //   url: MAINNET_API_KEY,
+      // },
     },
     localhost: {
       chainId: 31337,

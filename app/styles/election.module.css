@@ -1,31 +1,32 @@
 .election{
     width: 100%;
+    margin:4rem 0rem;
 }
 .election_container{
     width: 80%;
     margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(1fr 1fr);
-    align-items: center;
 }
-.election_container >h1{
-    margin-left: 2rem;
-}
-.election_list{
-    justify-self: end;
-}
-.election_list >h3{
-    padding: 0;
-    margin: 0;
-    margin-right: 2rem;
-}
-.election_details{
-    margin-top: 3rem;
-    background-color: var(--shadow-light-color);
-    box-shadow:var(--box-shadow);
-    padding: 2rem;
+.election_candidate{
     display: flex;
-    justify-content: space-around;
-    color: var(--icons-color);
-    grid-column: 1/3;
+    padding: 1rem;
+    align-items: center;
+    justify-content: space-between;
+    margin: 2rem 1rem;
+    background-color: var(--bg-shadow-dark-color);
+    box-shadow: var(--box-shadow);
+    border-radius: 10px;
+}
+.election_candidate > div{
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-left: 1rem;
+}
+.election_candidate >div >p{
+    font-weight:600;
+    font-size: 1.5rem;
+}
+.election_candidate >div>span{
+    font-weight: 500;
+    font-size: 1.4rem;
 }

@@ -1,26 +1,48 @@
 import React from "react";
 import styles from "../styles/election.module.css";
 import Link from "next/link";
+import { Button } from "@/components/componentIndex";
 
 const election = () => {
   return (
     <div className={styles.election}>
       <div className={styles.election_container}>
-        <h1>🟢 Ongoing Elections</h1>
-        <Link href="/electionList" className={styles.election_list}>
-          <h3>View All Elections</h3>
-        </Link>
-        <div className={styles.election_details}>
+        <div className={styles.election_candidate}>
           <div>
-            <p>Admin : </p>
-            <p>0xf13412dcdwfwr2fwvwrvwrv</p>
-            <p>prince sharma</p>
+            <p>0</p>
+            <p>Arvind kejriwal</p>
+            <span>(AAP)</span>
           </div>
+          <Button
+            innerText="Vote"
+            handleClick={() => console.log("0 voted")}
+            link=""
+          />
+        </div>
+        <div className={styles.election_candidate}>
           <div>
-            <p>election type : loksabha election</p>
-            <p>No. of candidates : 3</p>
-            <p></p>
+            <p>1</p>
+            <p>Narendra damodar modi</p>
+            <span>(BJP)</span>
           </div>
+          <Button
+            innerText="Vote"
+            handleClick={() => console.log("0 voted")}
+            link=""
+          />
+        </div>
+        <div className={styles.election_candidate}>
+          <div>
+            <p>2</p>
+
+            <p>Rahul gandhi</p>
+            <span>(Congress)</span>
+          </div>
+          <Button
+            innerText="Vote"
+            handleClick={() => console.log("0 voted")}
+            link=""
+          />
         </div>
       </div>
     </div>
