@@ -1,6 +1,7 @@
 const { network, ethers, deployments, getNamedAccounts } = require("hardhat");
 const { developmentChains } = require("../helper-hardhat-config");
 const { assert, expect } = require("chai");
+const { keccak256, formatBytes32String } = require("ethers/lib/utils");
 
 !developmentChains.includes(network.name)
   ? describe.skip
@@ -64,7 +65,7 @@ const { assert, expect } = require("chai");
               "AAP",
               "Na jeeyenge na jeene denge"
             )
-          ).to.be.reverted;
+          ).to.be.revertedWithCustomError(Election, "Election_NotAdmin");
         });
 
         it("increases the candidate count", async () => {
@@ -84,6 +85,73 @@ const { assert, expect } = require("chai");
             "Na jeeyenge na jeene denge"
           );
           expect(candidateAdded).to.emit("Election", "CandidateAdded");
+        });
+      });
+
+      describe("register voter", () => {
+        it("register as a voter and store in voterDetails mapping", async () => {
+          const aadhar = "510184529726";
+          const phoneNO = "9971088480";
+          await Election.registerVoter(aadhar, phoneNO);
+          const voterdetail = await Election.getVoterDetails(deployer);
+
+          assert.equal(voterdetail.voter, deployer);
+        });
+
+        it("should emit the event too", async () => {
+          const electionRegister = await Election.registerVoter(
+            "510184529726",
+            "9971088480"
+          );
+          expect(electionRegister).to.emit("Election", "VoterRegistered");
+        });
+      });
+
+      describe("verify", () => {
+        beforeEach(async () => {
+          await Election.registerVoter("510184529726", "9971088480");
+        });
+
+        it("should not revert if the voter is already verified", async () => {
+          await Election.verifyVoter(deployer, true);
+          const [voter, dataHash, isRegistered, isVerified, hasVoted] =
+            await Election.getVoterDetails(deployer);
+          assert.equal(isVerified, true);
+        });
+      });
+
+      describe("vote", () => {
+        beforeEach(async () => {
+          await Election.addCandidate(
+            "kejriwal",
+            "AAP",
+            "Na jeeyenge na jeene denge"
+          );
+          await Election.registerVoter("510184529726", "9971088480");
+        });
+        it("should revert if voter is not verified", async () => {
+          await expect(Election.Vote(0)).to.be.revertedWithCustomError(
+            Election,
+            "Election_VoterNotVerified"
+          );
+        });
+
+        it("should revert if election is not initiated", async () => {
+          await Election.verifyVoter(deployer, true);
+          await expect(Election.Vote(0)).to.be.revertedWithoutReason();
+        });
+
+        it("should increases the number of votes of the candidate", async () => {
+          await Election.initiateElection();
+          await Election.verifyVoter(deployer, true);
+
+          await Election.Vote(0);
+          const [name, partyName, slogan, votes] =
+            await Election.getCandidateDetails(0);
+          const [voter, dataHash, isRegistered, isVerified, hasVoted] =
+            await Election.getVoterDetails(deployer);
+          assert.equal(votes, 1);
+          assert.equal(hasVoted, true);
         });
       });
     });

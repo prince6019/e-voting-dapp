@@ -99,21 +99,19 @@ contract Election {
         emit CandidateAdded(_name, _partyName, _slogan);
     }
 
-    function initiateElection(uint _endTime) external onlyAdmin {
+    function initiateElection() external onlyAdmin {
         start = block.timestamp;
-        end = _endTime;
+        end = block.timestamp + 1 minutes;
     }
 
     function registerVoter(
-        string memory _aadhar,
-        string memory _phoneNo
+        string calldata _aadhar,
+        string calldata _phoneNo
     ) external {
         bytes32 data = bytes32(
             keccak256(abi.encodePacked(_aadhar, _phoneNo, msg.sender))
         );
         voterDetails[msg.sender] = Voter(msg.sender, data, true, false, false);
-        console.logBytes32(data);
-
         emit VoterRegistered(msg.sender, _aadhar, _phoneNo);
     }
 
@@ -128,11 +126,10 @@ contract Election {
         }
         if (voterDetails[msg.sender].hasVoted) {
             uint candidate = votedDetail[msg.sender];
-            candidateDetails[candidate].votes--;
+            Candidates[candidate].votes--;
         }
-        require(block.timestamp > start && block.timestamp < end);
-
-        candidateDetails[_candidateId].votes++;
+        require(block.timestamp >= start && block.timestamp <= end);
+        Candidates[_candidateId].votes++;
         voterDetails[msg.sender].hasVoted = true;
     }
 
@@ -166,5 +163,15 @@ contract Election {
         return Candidates;
     }
 
-    function getVoterDetails() external view returns (Voter memory) {}
+    function getCandidateDetails(
+        uint _candidateID
+    ) external view returns (Candidate memory) {
+        return Candidates[_candidateID];
+    }
+
+    function getVoterDetails(
+        address _voter
+    ) external view returns (Voter memory) {
+        return voterDetails[_voter];
+    }
 }
