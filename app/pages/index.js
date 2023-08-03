@@ -4,10 +4,13 @@ import styles from "@/styles/Home.module.css";
 import { HomePage } from "@/components/componentIndex";
 import Cards from "@/components/Cards/Cards";
 import Doubts from "@/components/doubts/Doubts";
+import { useSigner } from "@thirdweb-dev/react";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
+  const signer = useSigner();
+
   return (
     <div className={styles.home}>
       <div className={styles.home_container}>

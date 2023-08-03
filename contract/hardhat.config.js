@@ -17,7 +17,7 @@ module.exports = {
     compilers: [{ version: "0.8.18" }],
   },
   paths: {
-    artifacts: "./artifacts",
+    artifacts: "../app/artifacts",
   },
 
   defaultNetwork: "hardhat",

@@ -1,14 +1,56 @@
-import { Button } from "@/components/componentIndex";
+import { Button, deploy } from "@/components/componentIndex";
 import styles from "../styles/createElection.module.css";
 import { useState } from "react";
+import { useAddress, useSigner } from "@thirdweb-dev/react";
+import { ethers } from "ethers";
+import Election from "../artifacts/contracts/Election.sol/Election";
 
 export default function createElection() {
   const [showCandidate, setShowCandidate] = useState(false);
+  const [adminName, setAdminName] = useState("");
+  const [adminPosition, setAdminPosition] = useState("");
+  const [electionTitle, setElectionTitle] = useState("");
+  const [candidates, setcandidates] = useState([]);
+  const address = useAddress();
+  const signer = useSigner();
 
-  const handleClickEletion = () => {};
+  const handleAddElectionDetails = async () => {
+    const adminName = document.getElementById("adminName").value;
+    setAdminName(adminName);
+    const adminPosition = document.getElementById("adminPosition").value;
+    setAdminPosition(adminPosition);
+    const electionTitle = document.getElementById("electionTitle").value;
+    setElectionTitle(electionTitle);
+    console.log(adminName, adminPosition, electionTitle);
+    setShowCandidate(true);
+  };
 
-  const handleAddCandidate = () => {
+  const handleAddCandidate = async () => {
+    const obj = {
+      candidateName: document.getElementById("candidateName").value,
+      candidatePartyName: document.getElementById("canidatePartyName").value,
+      candidateSlogan: document.getElementById("canidateSlogan").value,
+    };
+    setcandidates((candidate) => [...candidate, obj]);
     console.log("candidate added!");
+  };
+
+  const newContract = async () => {
+    if (signer == null || signer == undefined) {
+      return;
+    }
+    try {
+      console.log("signer : ", signer);
+      const election = new ethers.ContractFactory(
+        Election.abi,
+        Election.bytecode,
+        signer
+      );
+      const electionContract = await election.deploy();
+      console.log("election contract addresss : ", electionContract.address);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
@@ -26,51 +68,71 @@ export default function createElection() {
           <div className={styles.createElection_registration}>
             <form action="/createElecton" method="post">
               <label>Your Wallet Address</label>
-              <input placeholder="0x12345" disabled={true} />
+              <input
+                placeholder={address || "please connect your wallet"}
+                disabled
+                type="text"
+              />
               <label>Your Name</label>
               <input
                 placeholder="Enter your name"
+                value={adminName}
+                onChange={() => setAdminName(e.target.value)}
                 type="text"
-                required={true}
+                id="adminName"
+                required
               />
               <label>Your Position</label>
               <input
                 placeholder="Enter your position in organisation"
                 type="text"
-                required={true}
+                value={adminPosition}
+                onChange={() => setAdminPosition(e.target.value)}
+                id="adminPosition"
+                required
               />
               <label>Election Title</label>
-              <input placeholder="What's this election for" required={true} />
+              <input
+                placeholder="What's this election for"
+                type="text"
+                onChange={() => setElectionTitle(e.target.value)}
+                value={electionTitle}
+                id="electionTitle"
+                required
+              />
             </form>
 
             <Button
-              handleClick={() => setShowCandidate(true)}
-              innerText="Add Candidates -->"
+              handleClick={() => handleAddElectionDetails()}
+              innerText="Next -->"
               link=""
             />
           </div>
         ) : (
           <div className={styles.createElection_addcandidate}>
-            <form>
+            <form type="submit">
               <label>wallet Address </label>
-              <input value="0x12345" disabled={true} />
+              <input value="0x12345" disabled />
               <label>Candidate Name </label>
               <input
                 placeholder="Enter Candaidate's Name"
                 type="text"
-                required={true}
+                id="CandidateName"
+                required
               />
               <label>Party's name </label>
               <input
                 placeholder="Enter candidate's party name"
                 type="text"
-                required={true}
+                id="candidatePartyName"
+                required
               />
               <label>Party's Slogan </label>
               <input
                 placeholder="Enter party's slogan"
+                id="candidateSlogan"
                 type="text"
-                required={true}
+                required
               />
             </form>
             <div className={styles.candidates_button}>
@@ -81,12 +143,18 @@ export default function createElection() {
                   handleClick={() => handleAddCandidate()}
                 />
                 <Button
-                  handleClick={() => setShowCandidate(false)}
+                  handleClick={() => {
+                    setShowCandidate(false);
+                  }}
                   innerText="<--- Back"
                   link=""
                 />
               </div>
-              <Button innerText="Start Election" link="/election" />
+              <Button
+                innerText="Start Election"
+                link=""
+                handleClick={() => newContract()}
+              />
             </div>
           </div>
         )}
