@@ -4,39 +4,70 @@ import { useState } from "react";
 import { useAddress, useSigner } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
 import Election from "../artifacts/contracts/Election.sol/Election";
+import { useRouter } from "next/router";
+import buttonStyle from "../components/Button/Button.module.css";
+import { AiOutlineClose } from "react-icons/ai";
 
 export default function createElection() {
-  const [showCandidate, setShowCandidate] = useState(false);
+  // useState hooks
+  // election registering hooks
   const [adminName, setAdminName] = useState("");
   const [adminPosition, setAdminPosition] = useState("");
   const [electionTitle, setElectionTitle] = useState("");
+  const [organizationTitle, setOrganizationTitle] = useState("");
+
+  // addcandidates hooks
   const [candidates, setcandidates] = useState([]);
+  const [candidateName, setCandidateName] = useState("");
+  const [candidatePartyName, setCandidatePartyName] = useState("");
+  const [candidatePartySlogan, setCandidatePartySlogan] = useState("");
+
+  // thirdweb variables
   const address = useAddress();
   const signer = useSigner();
+  const router = useRouter();
 
-  const handleAddElectionDetails = async () => {
-    const adminName = document.getElementById("adminName").value;
-    setAdminName(adminName);
-    const adminPosition = document.getElementById("adminPosition").value;
-    setAdminPosition(adminPosition);
-    const electionTitle = document.getElementById("electionTitle").value;
-    setElectionTitle(electionTitle);
-    console.log(adminName, adminPosition, electionTitle);
-    setShowCandidate(true);
+  // handle add candidate in form
+  const handleAddCandidate = (e) => {
+    e.preventDefault();
+    if (
+      candidateName === "" ||
+      candidatePartyName === "" ||
+      candidatePartySlogan === ""
+    ) {
+      console.error("please fill all the inputs");
+    } else {
+      const obj = {
+        candidateName: candidateName,
+        candidatePartyName: candidatePartyName,
+        candidatePartySlogan: candidatePartySlogan,
+      };
+      setcandidates((candidate) => [...candidate, obj]);
+      console.log("candidate added!");
+
+      setCandidateName("");
+      setCandidatePartyName("");
+      setCandidatePartySlogan("");
+    }
   };
 
-  const handleAddCandidate = async () => {
-    const obj = {
-      candidateName: document.getElementById("candidateName").value,
-      candidatePartyName: document.getElementById("canidatePartyName").value,
-      candidateSlogan: document.getElementById("canidateSlogan").value,
-    };
-    setcandidates((candidate) => [...candidate, obj]);
-    console.log("candidate added!");
-  };
-
+  //deploy election contract
   const newContract = async () => {
     if (signer == null || signer == undefined) {
+      return;
+    }
+    if (
+      adminPosition === "" ||
+      adminName === "" ||
+      electionTitle === "" ||
+      organizationTitle === ""
+    ) {
+      alert("please fill all inputs in election register");
+      console.error("please fill all inputs in election register");
+      return;
+    }
+    if (candidates.length <= 1) {
+      alert("Add atleast 2 canidates");
       return;
     }
     try {
@@ -48,6 +79,13 @@ export default function createElection() {
       );
       const electionContract = await election.deploy();
       console.log("election contract addresss : ", electionContract.address);
+      router.push({
+        pathname: "/election/[contractAddress]",
+        query: {
+          contractAddress: electionContract.address,
+          data: JSON.stringify(candidates),
+        },
+      });
     } catch (e) {
       console.log(e);
     }
@@ -56,108 +94,132 @@ export default function createElection() {
   return (
     <div className={styles.createElection}>
       <div className={styles.createElection_container}>
-        <div className={styles.createElection_header}>
-          <h3 style={{ borderBottom: !showCandidate && "4px solid #4c5773" }}>
-            Register Yourself
-          </h3>
-          <h3 style={{ borderBottom: showCandidate && "4px solid #4c5773" }}>
-            Add Candidates
-          </h3>
-        </div>
-        {!showCandidate ? (
-          <div className={styles.createElection_registration}>
-            <form action="/createElecton" method="post">
-              <label>Your Wallet Address</label>
+        <h3 className={styles.register_header}>Register Yourself</h3>
+        <div className={styles.createElection_registration}>
+          <form type="Submit" action="/createElecton" method="post">
+            <label>
+              Your Wallet Address
               <input
                 placeholder={address || "please connect your wallet"}
                 disabled
                 type="text"
               />
-              <label>Your Name</label>
+            </label>
+            <label>
+              Your Name
               <input
                 placeholder="Enter your name"
                 value={adminName}
-                onChange={() => setAdminName(e.target.value)}
+                onChange={(e) => setAdminName(e.target.value)}
                 type="text"
                 id="adminName"
                 required
               />
-              <label>Your Position</label>
+            </label>
+            <label>
+              Job title or Position
               <input
                 placeholder="Enter your position in organisation"
                 type="text"
                 value={adminPosition}
-                onChange={() => setAdminPosition(e.target.value)}
+                onChange={(e) => setAdminPosition(e.target.value)}
                 id="adminPosition"
                 required
               />
-              <label>Election Title</label>
+            </label>
+            <label>
+              Election Title
               <input
                 placeholder="What's this election for"
                 type="text"
-                onChange={() => setElectionTitle(e.target.value)}
+                onChange={(e) => setElectionTitle(e.target.value)}
                 value={electionTitle}
                 id="electionTitle"
                 required
               />
-            </form>
+            </label>
+            <label>
+              organization title
+              <input
+                placeholder="Eg AIACTR"
+                type="text"
+                value={organizationTitle}
+                onChange={(e) => setOrganizationTitle(e.target.value)}
+                required
+              />
+            </label>
+          </form>
+        </div>
+        <h3 className={styles.addcandidate_header}>Add Candidates</h3>
 
-            <Button
-              handleClick={() => handleAddElectionDetails()}
-              innerText="Next -->"
-              link=""
-            />
-          </div>
-        ) : (
-          <div className={styles.createElection_addcandidate}>
-            <form type="submit">
-              <label>wallet Address </label>
+        {candidates.map((candidate, i) => {
+          return (
+            <div className={styles.candidate_created} key={i}>
+              <AiOutlineClose
+                className={styles.close_icon}
+                onClick={() =>
+                  setcandidates((candidates) => candidates.splice(i, 1))
+                }
+              />
+              <p>Candidate No. {i} </p>
+              <p>{candidate.candidateName} </p>
+              <p>{candidate.candidatePartyName} </p>
+              <p>{candidate.candidatePartySlogan}</p>
+            </div>
+          );
+        })}
+
+        <div className={styles.createElection_addcandidate}>
+          <form type="submit">
+            <label>
+              wallet Address
               <input value="0x12345" disabled />
-              <label>Candidate Name </label>
+            </label>
+            <label>
+              Candidate Name
               <input
                 placeholder="Enter Candaidate's Name"
                 type="text"
-                id="CandidateName"
+                onChange={(e) => setCandidateName(e.target.value)}
                 required
+                value={candidateName}
               />
-              <label>Party's name </label>
+            </label>
+            <label>
+              Party's name
               <input
                 placeholder="Enter candidate's party name"
                 type="text"
-                id="candidatePartyName"
+                onChange={(e) => setCandidatePartyName(e.target.value)}
                 required
+                value={candidatePartyName}
               />
-              <label>Party's Slogan </label>
+            </label>
+            <label>
+              Party's Slogan
               <input
                 placeholder="Enter party's slogan"
                 id="candidateSlogan"
                 type="text"
+                onChange={(e) => setCandidatePartySlogan(e.target.value)}
                 required
+                value={candidatePartySlogan}
               />
-            </form>
-            <div className={styles.candidates_button}>
-              <div>
-                <Button
-                  innerText="Add Candidate"
-                  link=""
-                  handleClick={() => handleAddCandidate()}
-                />
-                <Button
-                  handleClick={() => {
-                    setShowCandidate(false);
-                  }}
-                  innerText="<--- Back"
-                  link=""
-                />
-              </div>
-              <Button
-                innerText="Start Election"
-                link=""
-                handleClick={() => newContract()}
-              />
-            </div>
-          </div>
-        )}
+            </label>
+
+            <button
+              className={buttonStyle.button}
+              type="submit"
+              onClick={(e) => handleAddCandidate(e)}
+            >
+              {" "}
+              Add candidate
+            </button>
+          </form>
+        </div>
+        <button className={buttonStyle.button} onClick={() => newContract()}>
+          deploy Election
+        </button>
       </div>
     </div>
   );
