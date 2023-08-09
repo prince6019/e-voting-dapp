@@ -7,12 +7,15 @@ import Election from "../artifacts/contracts/Election.sol/Election";
 import { useRouter } from "next/router";
 import buttonStyle from "../components/Button/Button.module.css";
 import { AiOutlineClose } from "react-icons/ai";
+import axios from "axios";
 
 export default function createElection() {
   // useState hooks
   // election registering hooks
   const [adminName, setAdminName] = useState("");
   const [adminPosition, setAdminPosition] = useState("");
+  const [adminAadhar, setAdminAadhar] = useState("");
+  const [adminPhone, setAdminPhone] = useState("");
   const [electionTitle, setElectionTitle] = useState("");
   const [organizationTitle, setOrganizationTitle] = useState("");
 
@@ -26,6 +29,8 @@ export default function createElection() {
   const address = useAddress();
   const signer = useSigner();
   const router = useRouter();
+
+  const [loading, setLoading] = useState(false);
 
   // handle add candidate in form
   const handleAddCandidate = (e) => {
@@ -53,6 +58,7 @@ export default function createElection() {
 
   //deploy election contract
   const newContract = async () => {
+    setLoading(true);
     if (signer == null || signer == undefined) {
       return;
     }
@@ -60,7 +66,9 @@ export default function createElection() {
       adminPosition === "" ||
       adminName === "" ||
       electionTitle === "" ||
-      organizationTitle === ""
+      organizationTitle === "" ||
+      adminAadhar === "" ||
+      adminPhone === ""
     ) {
       alert("please fill all inputs in election register");
       console.error("please fill all inputs in election register");
@@ -77,8 +85,46 @@ export default function createElection() {
         Election.bytecode,
         signer
       );
-      const electionContract = await election.deploy();
+      const electionContract = await election.deploy(
+        adminName,
+        adminPosition,
+        adminAadhar,
+        adminPhone,
+        electionTitle,
+        organizationTitle
+      );
       console.log("election contract addresss : ", electionContract.address);
+      candidates.forEach(async (item) => {
+        const tx = await electionContract.addCandidate(
+          item.candidateName,
+          item.candidatePartyName,
+          item.candidatePartySlogan
+        );
+        await tx.wait(1);
+      });
+      const tx1 = await electionContract.initiateElection();
+      await tx1.wait(1);
+      const startTime = await electionContract.getStartTime();
+      console.log("start time :", startTime);
+      const endTime = await electionContract.getEndTime();
+      console.log("end time :", endTime);
+
+      axios
+        .post("/createElection", {
+          contractAddress: electionContract.address,
+          candidates: candidates,
+          adminName: adminName,
+          adminAddress: address,
+          electionTitle: electionTitle,
+          organizationTitle: organizationTitle,
+          isEndElection: false,
+        })
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
       router.push({
         pathname: "/election/[contractAddress]",
         query: {
@@ -86,6 +132,7 @@ export default function createElection() {
           data: JSON.stringify(candidates),
         },
       });
+      setLoading(false);
     } catch (e) {
       console.log(e);
     }
@@ -94,6 +141,7 @@ export default function createElection() {
   return (
     <div className={styles.createElection}>
       <div className={styles.createElection_container}>
+        {loading && <div className={styles.loading}> loading ...</div>}
         <h3 className={styles.register_header}>Register Yourself</h3>
         <div className={styles.createElection_registration}>
           <form type="Submit" action="/createElecton" method="post">
@@ -128,6 +176,26 @@ export default function createElection() {
               />
             </label>
             <label>
+              Admin's Aadhar No.{" "}
+              <input
+                placeholder="Please enter your 12 digit aadhar no."
+                type="number"
+                onChange={(e) => setAdminAadhar(e.target.value)}
+                value={adminAadhar}
+                required
+              />
+            </label>
+            <label>
+              Admin's Phone No.
+              <input
+                placeholder="please enter your phone number"
+                type="number"
+                onChange={(e) => setAdminPhone(e.target.value)}
+                value={adminPhone}
+                required
+              />
+            </label>
+            <label>
               Election Title
               <input
                 placeholder="What's this election for"
@@ -158,7 +226,9 @@ export default function createElection() {
               <AiOutlineClose
                 className={styles.close_icon}
                 onClick={() =>
-                  setcandidates((candidates) => candidates.splice(i, 1))
+                  setcandidates((candidate) => {
+                    return candidate.filter((_, index) => i !== index);
+                  })
                 }
               />
               <p>Candidate No. {i} </p>

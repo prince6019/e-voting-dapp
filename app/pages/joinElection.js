@@ -1,12 +1,24 @@
-import styles from "../styles/electionList.module.css";
+import { useEffect } from "react";
+import styles from "../styles/joinElection.module.css";
 import Link from "next/link";
+import axios from "axios";
 
-export default function electionList() {
+export default function joinElection() {
+  useEffect(() => {
+    axios
+      .get("/joinElection")
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  });
   return (
-    <div className={styles.electionlist}>
-      <div className={styles.electionlist_container}>
+    <div className={styles.joinelection}>
+      <div className={styles.joinelection_container}>
         <h1>🟢 Ongoing Elections</h1>
-        <Link href="/totalElection" className={styles.electionlist}>
+        <Link href="/electionList" className={styles.electionlist}>
           <h3>View All Elections</h3>
         </Link>
         <div className={styles.election_details}>

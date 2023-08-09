@@ -1,9 +1,6 @@
-import Image from "next/image";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
-import { HomePage } from "@/components/componentIndex";
-import Cards from "@/components/Cards/Cards";
-import Doubts from "@/components/doubts/Doubts";
+import { HomePage, Doubts, Cards } from "@/components/componentIndex";
 import { useSigner } from "@thirdweb-dev/react";
 
 const inter = Inter({ subsets: ["latin"] });

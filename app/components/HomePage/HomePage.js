@@ -27,7 +27,7 @@ const HomePage = () => {
             <Button
               innerText="Join Election"
               handleClick={() => handleJoinElection}
-              link="/ongoingElection"
+              link="/joinElection"
             />
           </div>
         </div>

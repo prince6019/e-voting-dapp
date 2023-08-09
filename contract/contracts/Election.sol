@@ -39,7 +39,6 @@ contract Election {
     ElectionDetails private electionDetails;
 
     // structs arrays
-    address[] private Voters;
     Candidate[] private Candidates;
 
     // mapping
@@ -50,16 +49,41 @@ contract Election {
     // events----
     event CandidateAdded(string indexed name, string partyName, string slogan);
     event VoterRegistered(address indexed voter, string data, string phoneNo);
-    event electionAdded(
+    event electionCreated(
         string indexed adminName,
         string indexed electionTitle,
         string adminPosition,
         string organizationTitle
     );
 
-    constructor() {
+    constructor(
+        string memory _adminName,
+        string memory _adminPosition,
+        string memory _aadhar,
+        string memory _phoneNo,
+        string memory _electionTitle,
+        string memory _organizationTitle
+    ) {
+        bytes32 data = bytes32(
+            keccak256(abi.encodePacked(_aadhar, _phoneNo, msg.sender))
+        );
         i_admin = msg.sender;
         candidateCount = 1;
+
+        voterDetails[msg.sender] = Voter(msg.sender, data, true, true, false);
+
+        electionDetails = ElectionDetails(
+            _adminName,
+            _adminPosition,
+            _electionTitle,
+            _organizationTitle
+        );
+        emit electionCreated(
+            _adminName,
+            _adminPosition,
+            _electionTitle,
+            _organizationTitle
+        );
     }
 
     modifier onlyAdmin() {
@@ -67,26 +91,6 @@ contract Election {
             revert Election_NotAdmin();
         }
         _;
-    }
-
-    function setElectionDetails(
-        string calldata _adminName,
-        string calldata _adminPosition,
-        string calldata _electionTitle,
-        string calldata _organizationTitle
-    ) external onlyAdmin {
-        electionDetails = ElectionDetails(
-            _adminName,
-            _adminPosition,
-            _electionTitle,
-            _organizationTitle
-        );
-        emit electionAdded(
-            _adminName,
-            _adminPosition,
-            _electionTitle,
-            _organizationTitle
-        );
     }
 
     function addCandidate(
@@ -101,7 +105,7 @@ contract Election {
 
     function initiateElection() external onlyAdmin {
         start = block.timestamp;
-        end = block.timestamp + 1 minutes;
+        end = start + 1 minutes;
     }
 
     function registerVoter(
