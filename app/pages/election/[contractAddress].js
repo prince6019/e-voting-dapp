@@ -10,7 +10,7 @@ const contractAddress = () => {
   const signer = useSigner();
   const router = useRouter();
   const { contractAddress, data } = router.query;
-  console.log(contractAddress);
+  console.log("contract address : ", contractAddress);
   const jsonData = JSON.parse(data);
 
   const handleVote = async (i) => {

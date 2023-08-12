@@ -1,0 +1,48 @@
+.addcandidate{
+    width: 100%;
+}
+
+.addcandidate_header{
+    font-size: 1.5rem;
+    margin-left: 2rem;
+    border-bottom: 1px solid var(--icons-color);
+    padding-bottom: 2rem;
+}
+
+.createElection_addcandidate >form{
+    margin-left: 2rem;
+    background-color: var(--shadow-light-color);
+    border-radius: 10px;
+    box-shadow: var(--box-shadow);
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    padding: 2rem;
+    font-size: 1.2rem;
+}
+.createElection_addcandidate >form >label{
+    display:flex;
+    flex-direction: column;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+.createElection_addcandidate >form > label >input{
+    width: 50%;
+    height: 3rem;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+    padding-left: 1rem;
+    border-radius: 10px;
+    border: 1px solid var(--icons-color);
+}
+
+.candidate_created{
+    margin: 2rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap:0.5rem;
+    background-color: var(--shadow-light-color);
+    border-radius: 10px;
+    box-shadow: var(--box-shadow-2);
+}

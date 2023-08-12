@@ -30,21 +30,24 @@ const electionSchema = new mongoose.Schema({
     type: string,
     required: true,
   },
-  date: { type: Date, default: Date.now },
+  date: { type: Date, default: Date.now() },
   end: {
-    type: bool,
+    type: Number,
     required: true,
   },
 });
 
 const election = mongoose.model("Election", electionSchema);
 
-app
-  .route("/")
-  .get((req, res) => {})
-  .post("/", (req, res) => {});
-
-app.get("/ongoing election", (req, res) => {});
+app.get("/ongoing election", async (req, res) => {
+  try {
+    const data = await election.find({ end: { $gte: Date.now() } });
+    console.log(data);
+    res.send(data);
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 app.post("/createElection", async (req, res) => {
   console.log("this is the data : ", req.body);
@@ -55,7 +58,7 @@ app.post("/createElection", async (req, res) => {
     adminAddress,
     electionTitle,
     organizationTitle,
-    isEndElection,
+    EndTime,
   } = req.body;
 
   const elect = new election({
@@ -64,7 +67,7 @@ app.post("/createElection", async (req, res) => {
     candidates: candidates,
     electionTitle,
     organizationTitle,
-    isEndElection,
+    EndTime,
   });
   await elect.save();
   res.send("contract saved successfully : ", contractAddress);

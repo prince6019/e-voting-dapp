@@ -11,8 +11,14 @@
     transition: all ease-in 0.3s;
     box-shadow: var(--box-shadow);
     margin-top: 2rem;
+    cursor: pointer;
 }
 .button:hover{
     background-color: var(--icons-light-color);
     color: var(--icons-color);
+}
+
+.deployButton{
+    justify-self: flex-end;
+    align-self: flex-end;
 }
