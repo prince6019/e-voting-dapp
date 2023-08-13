@@ -46,3 +46,8 @@
     border-radius: 10px;
     box-shadow: var(--box-shadow-2);
 }
+.react_loading{
+    position: relative;
+    left: 48%;
+    margin-top: 3rem;
+}

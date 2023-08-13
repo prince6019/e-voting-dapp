@@ -49,29 +49,32 @@ app.get("/ongoing election", async (req, res) => {
   }
 });
 
-app.post("/createElection", async (req, res) => {
-  console.log("this is the data : ", req.body);
-  const {
-    contractAddress,
-    candidates,
-    adminName,
-    adminAddress,
-    electionTitle,
-    organizationTitle,
-    EndTime,
-  } = req.body;
+app
+  .route("/createElection")
+  .post(async (req, res) => {
+    console.log("this is the data : ", req.body);
+    const {
+      contractAddress,
+      adminName,
+      adminAddress,
+      electionTitle,
+      organizationTitle,
+    } = req.body;
 
-  const elect = new election({
-    contractAddress,
-    admin: { adminName, adminAddress },
-    candidates: candidates,
-    electionTitle,
-    organizationTitle,
-    EndTime,
+    const elect = new election({
+      contractAddress: contractAddress,
+      admin: { adminName, adminAddress },
+      electionTitle: electionTitle,
+      organizationTitle: organizationTitle,
+    });
+    await elect.save();
+    res.send("contract saved successfully : ", contractAddress);
+  })
+  .put(async (req, res) => {
+    console.log("this is the updated data request", req.body);
+    const { electionAddress, candidates, endTime } = req.body;
+    // election.updateOne({contractAddress:electionAddress} , [candidates:candidates ])s
   });
-  await elect.save();
-  res.send("contract saved successfully : ", contractAddress);
-});
 
 app.listen("3000", (req, res) => {
   console.log("listening on port 3000");

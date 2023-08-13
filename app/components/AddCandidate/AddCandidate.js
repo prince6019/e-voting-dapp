@@ -1,10 +1,15 @@
 import React, { useState } from "react";
 import styles from "./AddCandidate.module.css";
-import { AiOutlineClose } from "react-icons/ai";
+import buttonStyles from "../Button/Button.module.css";
+import { useRouter } from "next/router";
 import Election from "../../artifacts/contracts/Election.sol/Election";
+
+// extenral inport -----
+import { AiOutlineClose } from "react-icons/ai";
 import { useSigner } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
-import buttonStyles from "../Button/Button.module.css";
+import ReactLoading from "react-loading";
+import axios from "axios";
 
 const AddCandidate = ({ contractAddress }) => {
   // addcandidates hooks
@@ -12,9 +17,12 @@ const AddCandidate = ({ contractAddress }) => {
   const [candidateName, setCandidateName] = useState("");
   const [candidatePartyName, setCandidatePartyName] = useState("");
   const [candidatePartySlogan, setCandidatePartySlogan] = useState("");
+  const [candidateCount, setCandidateCount] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   // thirdWeb hooks
   const signer = useSigner();
+  const router = useRouter();
   const electionContract = new ethers.Contract(
     contractAddress,
     Election.abi,
@@ -28,6 +36,7 @@ const AddCandidate = ({ contractAddress }) => {
       candidatePartyName === "" ||
       candidatePartySlogan === ""
     ) {
+      alert("Please fill all the input fields");
       console.error("please fill all the inputs");
       return;
     }
@@ -38,18 +47,22 @@ const AddCandidate = ({ contractAddress }) => {
       candidatePartySlogan: candidatePartySlogan,
     };
 
-    setcandidates((candidate) => [...candidate, obj]);
-    console.log("candidate added!");
     try {
+      setLoading(true);
       const tx = await electionContract.addCandidate(
         candidateName,
         candidatePartyName,
         candidatePartySlogan
       );
       await tx.wait(1);
+      setcandidates((candidate) => [...candidate, obj]);
+      // localStorage.setItem("candidateCount": );
+      setCandidateCount((count) => count + 1);
+      console.log("candidate added!");
     } catch (error) {
       console.log(error);
     }
+    setLoading(false);
 
     setCandidateName("");
     setCandidatePartyName("");
@@ -59,9 +72,28 @@ const AddCandidate = ({ contractAddress }) => {
   const handleElection = async () => {
     const candidateCount = await electionContract.getCandidateCount();
     console.log("candidate Cont :", candidateCount);
-    // if (candidateCount > 1) {
-    //   const startElection = await electionContract.initiateElection();
-    // }
+    if (candidateCount > 1) {
+      const startElection = await electionContract.initiateElection();
+      await startElection.wait(1);
+
+      const endTime = await electionContract.getEndTime();
+
+      axios
+        .put("/createElection", {
+          electionAddress: electionContract.address,
+          candidates: candidates,
+          endTime: endTime,
+        })
+        .then((response) => console.log(response))
+        .catch((error) => console.log(error));
+
+      router.push({
+        pathname: `/election/${electionContract.address}`,
+        query: {
+          data: JSON.stringify(candidates),
+        },
+      });
+    }
   };
 
   return (
@@ -104,16 +136,34 @@ const AddCandidate = ({ contractAddress }) => {
             </label>
 
             <button
-              className={buttonStyles.button}
+              className={` ${buttonStyles.button} ${buttonStyles.deployButton}`}
               type="submit"
               onClick={(e) => handleAddCandidate(e)}
+              disabled={loading}
             >
               {" "}
               Add candidate
             </button>
           </form>
         </div>
-        <button onClick={handleElection}>start election</button>
+        {candidateCount > 1 && (
+          <button
+            className={buttonStyles.button}
+            style={{ marginLeft: "2rem" }}
+            onClick={handleElection}
+          >
+            start election
+          </button>
+        )}
+        {loading && (
+          <ReactLoading
+            type="spinningBubbles"
+            color="#4c5773"
+            height={50}
+            width={50}
+            className={styles.react_loading}
+          />
+        )}
         {candidates.map((candidate, i) => {
           return (
             <div className={styles.candidate_created} key={i}>

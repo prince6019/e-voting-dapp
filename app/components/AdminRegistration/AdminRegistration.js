@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import styles from "./AdminRegistration.module.css";
 import buttonStyles from "../Button/Button.module.css";
-import { useAddress, useSigner } from "@thirdweb-dev/react";
 import Election from "../../artifacts/contracts/Election.sol/Election";
+// external import ---
+import { useAddress, useSigner } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
+import ReactLoading from "react-loading";
+import axios from "axios";
+
 const AdminRegistration = ({ setContractAddress }) => {
   // third web hooks
   const signer = useSigner();
@@ -32,7 +36,6 @@ const AdminRegistration = ({ setContractAddress }) => {
       adminPhone === ""
     ) {
       alert("please fill all inputs in election register");
-      console.error("please fill all inputs in election register");
       return;
     }
 
@@ -51,16 +54,40 @@ const AdminRegistration = ({ setContractAddress }) => {
         electionTitle,
         organizationTitle
       );
+      await electionContract.deployTransaction.wait(1);
       console.log("election contract addresss : ", electionContract.address);
+      localStorage.setItem("contractAddress", electionContract.address);
       setContractAddress(electionContract.address);
-      setLoading(false);
+
+      axios
+        .post("/createElection", {
+          contractAddress: electionContract.address,
+          adminName: adminName,
+          adminAddress: address,
+          electionTitle: electionTitle,
+          organizationTitle: organizationTitle,
+        })
+        .then((res) => console.log(res))
+        .catch((error) => console.log(error));
     } catch (error) {
       console.log(error);
     }
+    setLoading(false);
   };
 
   return (
     <div className={styles.adminRegistration}>
+      {loading && (
+        <div className={styles.react_loading_box}>
+          <ReactLoading
+            type="spinningBubbles"
+            color="#4c5773"
+            height={667}
+            width={335}
+            className={styles.react_loading}
+          />
+        </div>
+      )}
       <div className={styles.adminRegistration_container}>
         <h3 className={styles.register_header}>Register Yourself</h3>
 
