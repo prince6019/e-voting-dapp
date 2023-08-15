@@ -21,19 +21,18 @@ const electionSchema = new mongoose.Schema({
     name: String,
     walletAddress: String,
   },
-  candidates: [{ name: string, partyName: string, slogan: string }],
+  candidates: [{ name: String, partyName: String, slogan: String }],
   electionTitle: {
-    type: string,
+    type: String,
     required: true,
   },
   organizationTitle: {
-    type: string,
+    type: String,
     required: true,
   },
   date: { type: Date, default: Date.now() },
   end: {
     type: Number,
-    required: true,
   },
 });
 
@@ -41,7 +40,17 @@ const election = mongoose.model("Election", electionSchema);
 
 app.get("/ongoing election", async (req, res) => {
   try {
-    const data = await election.find({ end: { $gte: Date.now() } });
+    const data = await election.find({ end: { $gte: Date.now() / 1000 } });
+    console.log(data);
+    res.send(data);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+app.get("/electionList", async (req, res) => {
+  try {
+    const data = await election.find({ end: { $lt: Date.now() / 1000 } });
     console.log(data);
     res.send(data);
   } catch (error) {
@@ -60,22 +69,30 @@ app
       electionTitle,
       organizationTitle,
     } = req.body;
-
-    const elect = new election({
-      contractAddress: contractAddress,
-      admin: { adminName, adminAddress },
-      electionTitle: electionTitle,
-      organizationTitle: organizationTitle,
-    });
-    await elect.save();
-    res.send("contract saved successfully : ", contractAddress);
+    try {
+      const elect = new election({
+        contractAddress: contractAddress,
+        admin: { adminName, adminAddress },
+        electionTitle: electionTitle,
+        organizationTitle: organizationTitle,
+      });
+      await elect.save();
+      console.log("contract saved successfully");
+    } catch (error) {
+      console.log(error);
+    }
+    res.send("contract saved successfully");
   })
   .put(async (req, res) => {
     console.log("this is the updated data request", req.body);
     const { electionAddress, candidates, endTime } = req.body;
-    // election.updateOne({contractAddress:electionAddress} , [candidates:candidates ])s
+    await election.updateOne(
+      { contractAddress: electionAddress },
+      { $set: { candidates: candidates, end: endTime } }
+    );
+    res.send("updated");
   });
 
-app.listen("3000", (req, res) => {
-  console.log("listening on port 3000");
+app.listen("8080", (req, res) => {
+  console.log("listening on port 8080");
 });

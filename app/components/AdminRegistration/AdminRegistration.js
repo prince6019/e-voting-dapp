@@ -60,7 +60,7 @@ const AdminRegistration = ({ setContractAddress }) => {
       setContractAddress(electionContract.address);
 
       axios
-        .post("/createElection", {
+        .post("http://localhost:8080/createElection", {
           contractAddress: electionContract.address,
           adminName: adminName,
           adminAddress: address,

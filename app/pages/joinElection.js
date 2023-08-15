@@ -6,7 +6,7 @@ import axios from "axios";
 export default function joinElection() {
   useEffect(() => {
     axios
-      .get("/joinElection")
+      .get("http://localhost:8080/joinElection")
       .then((data) => {
         console.log(data);
       })

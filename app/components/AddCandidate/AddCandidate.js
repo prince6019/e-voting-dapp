@@ -79,20 +79,14 @@ const AddCandidate = ({ contractAddress }) => {
       const endTime = await electionContract.getEndTime();
 
       axios
-        .put("/createElection", {
+        .put("http://localhost:8080/createElection", {
           electionAddress: electionContract.address,
           candidates: candidates,
           endTime: endTime,
         })
         .then((response) => console.log(response))
         .catch((error) => console.log(error));
-
-      router.push({
-        pathname: `/election/${electionContract.address}`,
-        query: {
-          data: JSON.stringify(candidates),
-        },
-      });
+      router.push(`election/${electionContract.address}`);
     }
   };
 
@@ -155,7 +149,7 @@ const AddCandidate = ({ contractAddress }) => {
             start election
           </button>
         )}
-        {loading && (
+        {/* {loading && (
           <ReactLoading
             type="spinningBubbles"
             color="#4c5773"
@@ -163,7 +157,7 @@ const AddCandidate = ({ contractAddress }) => {
             width={50}
             className={styles.react_loading}
           />
-        )}
+        )} */}
         {candidates.map((candidate, i) => {
           return (
             <div className={styles.candidate_created} key={i}>

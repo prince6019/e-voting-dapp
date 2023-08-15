@@ -1,57 +1,66 @@
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import styles from "../../styles/election.module.css";
-import { Button } from "@/components/componentIndex";
+import { buttonStyles } from "@/components/componentIndex";
 import Election from "../../artifacts/contracts/Election.sol/Election";
 import { ethers } from "ethers";
-import { useSigner } from "@thirdweb-dev/react";
+import { useAddress, useSigner } from "@thirdweb-dev/react";
 
 const contractAddress = () => {
   const signer = useSigner();
   const router = useRouter();
-  const initialTime = 60; // 60 seconds = 1 minute
-  const [timeRemaining, setTimeRemaining] = useState(initialTime);
+  const address = useAddress();
 
-  const { contractAddress, data } = router.query;
-  console.log("contract address : ", contractAddress);
-  const jsonData = JSON.parse(data);
+  const [contractInstance, setContractInstance] = useState();
+  const [candidates, setCandidates] = useState([]);
 
-  // election contract instance ----
-  const electionContract = new ethers.Contract(
-    contractAddress,
-    Election.abi,
-    signer
-  );
+  console.log("query : ", router.query);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTimeRemaining((prevTime) => prevTime - 1);
-    }, 1000); // Update every second
-
-    return () => {
-      clearInterval(interval);
+    if (!router.query || !signer) {
+      return;
+    }
+    const func = async () => {
+      try {
+        const electionContract = new ethers.Contract(
+          router.query?.contractAddress,
+          Election.abi,
+          signer
+        );
+        setContractInstance(electionContract);
+        const candidates = await electionContract.getCandidate();
+        console.log(candidates);
+        setCandidates(candidates);
+      } catch (error) {
+        console.log(error);
+      }
+      localStorage.clear();
     };
-  }, []);
-
-  const formatTime = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
-  };
-
-  useEffect(() => {
-    localStorage.clear();
-  }, []);
+    func();
+  }, [router.query.contractAddress, signer]);
 
   const handleVote = async (i) => {
-    const endTime = await electionContract.getEndTime();
-    if (endTime <= Date.now() / 1000) {
-      alert("election has been Ended");
+    console.log(contractInstance);
+    try {
+      const endTime = await contractInstance.getEndTime();
+      if (endTime <= Date.now() / 1000) {
+        alert("election has been Ended");
+        // router.push("/");
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    const hasVoted = await contractInstance.getVoterDetails(address);
+    if (hasVoted) {
+      alert(
+        "you already has voted , so please do not waste your time in trying again !!"
+      );
       return;
     }
     console.log(i);
     try {
-      const tx = await electionContract.Vote(i);
+      const tx = await contractInstance.Vote(i);
       await tx.wait(1);
       console.log(i, "voted successfully");
     } catch (error) {
@@ -62,21 +71,22 @@ const contractAddress = () => {
     <div className={styles.election}>
       <div className={styles.election_container}>
         <h2>{contractAddress}</h2>
-        <p>Time Remaining: {formatTime(timeRemaining)}</p>
 
-        {jsonData.map((candidate, i) => {
+        {candidates.map((candidate, i) => {
           return (
             <div className={styles.election_candidate} key={i}>
               <div>
                 <p>{i}</p>
-                <p>{candidate.candidateName}</p>
-                <span>{candidate.candidatePartyName}</span>
+                <p>{candidate?.name}</p>
+                <span>{candidate?.partyName}</span>
+                <span>{candidate?.slogan}</span>
               </div>
-              <Button
-                innerText="Vote"
-                handleClick={() => handleVote(i)}
-                link=""
-              />
+              <button
+                className={buttonStyles.button}
+                onClick={() => handleVote(i)}
+              >
+                Vote
+              </button>
             </div>
           );
         })}

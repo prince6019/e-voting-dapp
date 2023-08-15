@@ -7,6 +7,7 @@ import Doubts from "./doubts/Doubts";
 import Cards from "./Cards/Cards";
 import AdminRegistration from "./AdminRegistration/AdminRegistration";
 import AddCandidate from "./AddCandidate/AddCandidate";
+import buttonStyles from "./Button/Button.module.css";
 
 export {
   HomePage,
@@ -18,4 +19,5 @@ export {
   Cards,
   AdminRegistration,
   AddCandidate,
+  buttonStyles,
 };
