@@ -43,16 +43,18 @@ const contractAddress = () => {
     console.log(contractInstance);
     try {
       const endTime = await contractInstance.getEndTime();
-      if (endTime <= Date.now() / 1000) {
+      console.log("endTime : ", Number(endTime));
+      console.log("time right now : ", Date.now() / 1000);
+      if (Number(endTime) <= Date.now() / 1000) {
         alert("election has been Ended");
-        // router.push("/");
         return;
       }
     } catch (error) {
       console.log(error);
     }
     const hasVoted = await contractInstance.getVoterDetails(address);
-    if (hasVoted) {
+    console.log(hasVoted);
+    if (hasVoted.hasVoted) {
       alert(
         "you already has voted , so please do not waste your time in trying again !!"
       );

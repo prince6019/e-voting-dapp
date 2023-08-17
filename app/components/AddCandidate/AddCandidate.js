@@ -42,9 +42,9 @@ const AddCandidate = ({ contractAddress }) => {
     }
 
     const obj = {
-      candidateName: candidateName,
-      candidatePartyName: candidatePartyName,
-      candidatePartySlogan: candidatePartySlogan,
+      name: candidateName,
+      partyName: candidatePartyName,
+      slogan: candidatePartySlogan,
     };
 
     try {
@@ -56,7 +56,6 @@ const AddCandidate = ({ contractAddress }) => {
       );
       await tx.wait(1);
       setcandidates((candidate) => [...candidate, obj]);
-      // localStorage.setItem("candidateCount": );
       setCandidateCount((count) => count + 1);
       console.log("candidate added!");
     } catch (error) {
@@ -76,8 +75,8 @@ const AddCandidate = ({ contractAddress }) => {
       const startElection = await electionContract.initiateElection();
       await startElection.wait(1);
 
-      const endTime = await electionContract.getEndTime();
-
+      const res = await electionContract.getEndTime();
+      const endTime = Number(res);
       axios
         .put("http://localhost:8080/createElection", {
           electionAddress: electionContract.address,
@@ -149,7 +148,7 @@ const AddCandidate = ({ contractAddress }) => {
             start election
           </button>
         )}
-        {/* {loading && (
+        {loading && (
           <ReactLoading
             type="spinningBubbles"
             color="#4c5773"
@@ -157,7 +156,7 @@ const AddCandidate = ({ contractAddress }) => {
             width={50}
             className={styles.react_loading}
           />
-        )} */}
+        )}
         {candidates.map((candidate, i) => {
           return (
             <div className={styles.candidate_created} key={i}>

@@ -1,0 +1,18 @@
+.electionList{
+    width: 100%;
+}
+.electionList_container{
+    width: 80%;
+    margin: 0 auto;
+    padding: 2rem;
+}
+.election{
+    background-color: var(--icons-bg-color);
+    border-radius: 10px;
+    box-shadow: var(--box-shadow-2);
+    padding: 1rem;
+}
+
+.election >div:nth-child(1){
+    display: flex;
+}

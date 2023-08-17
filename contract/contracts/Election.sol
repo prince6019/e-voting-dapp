@@ -105,7 +105,7 @@ contract Election {
 
     function initiateElection() external onlyAdmin {
         start = block.timestamp;
-        end = start + 1 minutes;
+        end = start + 10 minutes;
     }
 
     function registerVoter(

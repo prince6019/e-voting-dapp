@@ -38,10 +38,10 @@ const electionSchema = new mongoose.Schema({
 
 const election = mongoose.model("Election", electionSchema);
 
-app.get("/ongoing election", async (req, res) => {
+app.get("/joinElection", async (req, res) => {
   try {
     const data = await election.find({ end: { $gte: Date.now() / 1000 } });
-    console.log(data);
+    console.log("requested live election data : ", data);
     res.send(data);
   } catch (error) {
     console.log(error);
@@ -72,7 +72,7 @@ app
     try {
       const elect = new election({
         contractAddress: contractAddress,
-        admin: { adminName, adminAddress },
+        admin: { name: adminName, walletAddress: adminAddress },
         electionTitle: electionTitle,
         organizationTitle: organizationTitle,
       });
