@@ -9,8 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@thirdweb-dev/auth": "^3.2.35",
     "@thirdweb-dev/react": "^3.14.7",
     "@thirdweb-dev/sdk": "^3.10.27",
+    "@walletconnect/core": "^2.10.0",
     "axios": "^1.4.0",
     "ethers": "^5.7.2",
     "next": "13.4.7",

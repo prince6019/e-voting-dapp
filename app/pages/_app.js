@@ -1,6 +1,6 @@
 import { Footer, Navbar } from "@/components/componentIndex";
 import "@/styles/globals.css";
-import { ThirdwebProvider } from "@thirdweb-dev/react";
+import { ThirdwebProvider, metamaskWallet } from "@thirdweb-dev/react";
 import Head from "next/head";
 
 export default function App({ Component, pageProps }) {
@@ -13,7 +13,14 @@ export default function App({ Component, pageProps }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <ThirdwebProvider activeChain="ethereum">
+      <ThirdwebProvider
+        activeChain="ethereum"
+        authConfig={{
+          authUrl: "http://localhost:8080/",
+          domain: "http://localhost:3000/",
+        }}
+        supportedWallets={[metamaskWallet()]}
+      >
         <div className="main">
           <Navbar />
           <Component {...pageProps} />
